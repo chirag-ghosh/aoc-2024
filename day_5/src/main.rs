@@ -1,4 +1,14 @@
-use std::{collections::HashSet, fs};
+use std::{cmp::Ordering, collections::HashSet, fs};
+
+fn check_order(orders: HashSet<(i32,i32)>, a:i32, b:i32) -> Ordering {
+    if orders.contains(&(a,b)) {
+        return Ordering::Less;
+    } else if orders.contains(&(b,a)) {
+        return Ordering::Greater;
+    } else {
+        return Ordering::Equal;
+    }
+}
 
 fn main() {
     let input_string = fs::read_to_string("./src/input.txt").unwrap();
@@ -15,6 +25,7 @@ fn main() {
         }
     }
 
+    let mut incorrect_updates: Vec<Vec<i32>> = Vec::new();
     let mut sum = 0;
     for update in updates.iter() {
         let mut is_correct = true;
@@ -32,8 +43,16 @@ fn main() {
 
         if is_correct {
             sum += update[(update.len()-1)/2];
+        } else {
+            incorrect_updates.push(update.to_owned());
         }
     }
-
     println!("Sum is: {}", sum);
+
+    let mut corrected_sum = 0;
+    for update in incorrect_updates.iter_mut() {
+        update.sort_by(|a,b| check_order(orders.clone(), a.to_owned(), b.to_owned()));
+        corrected_sum += update[(update.len()-1)/2];
+    }
+    println!("Corrected sum is: {}", corrected_sum);
 }
