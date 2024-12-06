@@ -1,15 +1,18 @@
-use std::fs;
+use std::{collections::HashSet, fs};
 
+#[derive(Clone)]
 struct Point {
     is_obstacle: bool,
-    is_visited: bool
+    is_visited: bool,
+    visited_direction: Direction
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 enum Direction {
     UP, DOWN, RIGHT, LEFT
 }
 
+#[derive(Clone)]
 struct Position {
     x: usize,
     y: usize,
@@ -45,33 +48,19 @@ impl Position {
     }
 }
 
-fn main() {
-    let input_string = fs::read_to_string("./src/input.txt").unwrap();
-    let mut matrix: Vec<Vec<Point>> = Vec::new();
-
-    let mut current_position = Position {
-        x: 0,
-        y: 0,
-        direction: Direction::UP
-    };
-
-    for (line_index, line) in input_string.lines().into_iter().enumerate() {
-        let mut row: Vec<Point> = Vec::new();
-        for (point_index, point) in line.chars().into_iter().enumerate() {
-            row.push(Point { is_obstacle: point == '#', is_visited: false });
-            if point == '^' {
-                current_position = Position {
-                    x: point_index,
-                    y: line_index,
-                    direction: Direction::UP
-                }
-            }
-        }
-        matrix.push(row);
-    }
-
+fn process_matrix(input_matrix: Vec<Vec<Point>>, start_position: Position) -> (bool, HashSet<(usize, usize)>) {
+    let mut matrix = input_matrix.clone();
+    let mut current_position = start_position.clone();
+    let mut path: HashSet<(usize, usize)> = HashSet::new();
+    let mut is_loop = false;
     loop {
+        if matrix[current_position.y][current_position.x].is_visited && matrix[current_position.y][current_position.x].visited_direction == current_position.direction {
+            is_loop = true;
+            break;
+        }
         matrix[current_position.y][current_position.x].is_visited = true;
+        matrix[current_position.y][current_position.x].visited_direction = current_position.direction;
+        path.insert((current_position.y,current_position.x));
 
         if current_position.direction == Direction::UP && current_position.y == 0
         || current_position.direction == Direction::RIGHT && current_position.x == matrix[0].len()-1
@@ -88,14 +77,35 @@ fn main() {
         }
     }
 
-    let mut visit_count = 0;
-    for row in matrix.iter() {
-        for point in row.iter() {
-            if point.is_visited {
-                visit_count += 1;
+    (is_loop, path)
+}
+
+fn main() {
+    let input_string = fs::read_to_string("./src/input.txt").unwrap();
+    let mut matrix: Vec<Vec<Point>> = Vec::new();
+
+    let mut start_position = Position {
+        x: 0,
+        y: 0,
+        direction: Direction::UP
+    };
+
+    for (line_index, line) in input_string.lines().into_iter().enumerate() {
+        let mut row: Vec<Point> = Vec::new();
+        for (point_index, point) in line.chars().into_iter().enumerate() {
+            row.push(Point { is_obstacle: point == '#', is_visited: false, visited_direction: Direction::UP });
+            if point == '^' {
+                start_position = Position {
+                    x: point_index,
+                    y: line_index,
+                    direction: Direction::UP
+                }
             }
         }
+        matrix.push(row);
     }
 
-    println!("Visit count is: {}", visit_count);
+    let (_, path) = process_matrix(matrix, start_position);
+
+    println!("Visit count is: {}", path.len());
 }
