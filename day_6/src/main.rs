@@ -1,18 +1,18 @@
-use std::{collections::HashSet, fs};
+use std::{borrow::Borrow, collections::HashSet, fs};
 
 #[derive(Clone)]
 struct Point {
     is_obstacle: bool,
     is_visited: bool,
-    visited_direction: Direction
+    visited_directions: HashSet<Direction>
 }
 
-#[derive(PartialEq, Eq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy, Debug, Hash)]
 enum Direction {
     UP, DOWN, RIGHT, LEFT
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 struct Position {
     x: usize,
     y: usize,
@@ -49,17 +49,17 @@ impl Position {
 }
 
 fn process_matrix(input_matrix: Vec<Vec<Point>>, start_position: Position) -> (bool, HashSet<(usize, usize)>) {
-    let mut matrix = input_matrix.clone();
-    let mut current_position = start_position.clone();
+    let mut matrix = input_matrix;
+    let mut current_position = start_position;
     let mut path: HashSet<(usize, usize)> = HashSet::new();
     let mut is_loop = false;
     loop {
-        if matrix[current_position.y][current_position.x].is_visited && matrix[current_position.y][current_position.x].visited_direction == current_position.direction {
+        if matrix[current_position.y][current_position.x].is_visited && matrix[current_position.y][current_position.x].visited_directions.contains(current_position.direction.borrow()) {
             is_loop = true;
             break;
         }
         matrix[current_position.y][current_position.x].is_visited = true;
-        matrix[current_position.y][current_position.x].visited_direction = current_position.direction;
+        matrix[current_position.y][current_position.x].visited_directions.insert(current_position.direction);
         path.insert((current_position.y,current_position.x));
 
         if current_position.direction == Direction::UP && current_position.y == 0
@@ -93,7 +93,7 @@ fn main() {
     for (line_index, line) in input_string.lines().into_iter().enumerate() {
         let mut row: Vec<Point> = Vec::new();
         for (point_index, point) in line.chars().into_iter().enumerate() {
-            row.push(Point { is_obstacle: point == '#', is_visited: false, visited_direction: Direction::UP });
+            row.push(Point { is_obstacle: point == '#', is_visited: false, visited_directions: HashSet::new() });
             if point == '^' {
                 start_position = Position {
                     x: point_index,
@@ -105,7 +105,16 @@ fn main() {
         matrix.push(row);
     }
 
-    let (_, path) = process_matrix(matrix, start_position);
-
+    let (_, path) = process_matrix(matrix.clone(), start_position.clone());
     println!("Visit count is: {}", path.len());
+
+    let mut new_obstacles = 0;
+    for point_index in path.iter() {
+        matrix[point_index.0][point_index.1].is_obstacle = true;
+        if process_matrix(matrix.clone(), start_position.clone()).0 {
+            new_obstacles += 1;
+        }
+        matrix[point_index.0][point_index.1].is_obstacle = false;
+    }
+    println!("New obstacles: {}", new_obstacles-1);
 }
