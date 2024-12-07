@@ -17,7 +17,14 @@ fn main() {
 
     let day = args[1].parse::<i32>().unwrap();
 
-    let input_string = fs::read_to_string(format!("./src/sample_input/{day}.txt")).unwrap();
+    let input_dir_path;
+    if args.len() >2 && args[2].eq_ignore_ascii_case("--sample") {
+        input_dir_path = "./src/sample_input";
+    } else {
+        input_dir_path = "./src/input";
+    }
+
+    let input_string = fs::read_to_string(format!("{input_dir_path}/{day}.txt")).unwrap();
 
     let (part1_ans, part2_ans) = match day {
         1 => day_1::main(input_string),
