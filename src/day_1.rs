@@ -1,14 +1,12 @@
-use std::fs;
 use std::collections::HashMap;
 
-fn main() {
-    let input_file_contents = fs::read_to_string("input.txt").unwrap();
+pub fn main(input_string: String) -> (String,String) {
     let mut first_vector = Vec::<i32>::new();
     let mut second_vector = Vec::<i32>::new();
     let mut first_map = HashMap::<i32, i32>::new();
     let mut second_map = HashMap::<i32, i32>::new();
 
-    for line in input_file_contents.lines() {
+    for line in input_string.lines() {
         let line_split = line.split_whitespace().collect::<Vec<&str>>();
         let first_entry = line_split[0].parse::<i32>().unwrap();
         let second_entry = line_split[1].parse::<i32>().unwrap();
@@ -28,8 +26,6 @@ fn main() {
         distance += (first_vector[i] - second_vector[i]).abs();
     }
 
-    println!("Distance: {}", distance);
-
     let mut similarity = 0;
     for key in first_map.keys() {
         if second_map.contains_key(key) {
@@ -37,5 +33,5 @@ fn main() {
         } 
     }
 
-    println!("Similarity: {}", similarity);
+    (distance.to_string(), similarity.to_string())
 }

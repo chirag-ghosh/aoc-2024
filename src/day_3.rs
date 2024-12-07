@@ -1,4 +1,3 @@
-use std::fs;
 use regex::Regex;
 
 fn get_sum(input_string: &str) -> i32 {
@@ -17,9 +16,7 @@ fn get_sum(input_string: &str) -> i32 {
     sum
 }
 
-fn main() {
-    let input_string = fs::read_to_string("./src/input.txt").unwrap();
-    println!("Normal sum is: {}", get_sum(&input_string));
+pub fn main(input_string: String) -> (String, String) {
 
     let chunks: Vec<&str> = input_string.split("do()").collect();
     let mut conditional_input_string: String = "".to_owned();
@@ -30,5 +27,6 @@ fn main() {
             conditional_input_string.push_str(chunk);
         }
     }
-    println!("Conditional sum is: {}", get_sum(&conditional_input_string));
+
+    (get_sum(&input_string).to_string(), get_sum(&conditional_input_string).to_string())
 }

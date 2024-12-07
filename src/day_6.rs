@@ -1,4 +1,4 @@
-use std::{borrow::Borrow, collections::HashSet, fs};
+use std::{borrow::Borrow, collections::HashSet};
 
 #[derive(Clone)]
 struct Point {
@@ -80,8 +80,7 @@ fn process_matrix(input_matrix: Vec<Vec<Point>>, start_position: Position) -> (b
     (is_loop, path)
 }
 
-fn main() {
-    let input_string = fs::read_to_string("./src/input.txt").unwrap();
+pub fn main(input_string: String) -> (String, String) {
     let mut matrix: Vec<Vec<Point>> = Vec::new();
 
     let mut start_position = Position {
@@ -106,7 +105,6 @@ fn main() {
     }
 
     let (_, path) = process_matrix(matrix.clone(), start_position.clone());
-    println!("Visit count is: {}", path.len());
 
     let mut new_obstacles = 0;
     for point_index in path.iter() {
@@ -116,5 +114,6 @@ fn main() {
         }
         matrix[point_index.0][point_index.1].is_obstacle = false;
     }
-    println!("New obstacles: {}", new_obstacles-1);
+
+    (path.len().to_string(), (new_obstacles-1).to_string())
 }

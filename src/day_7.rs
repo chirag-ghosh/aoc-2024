@@ -1,4 +1,4 @@
-use std::{borrow::Borrow, fs};
+use std::borrow::Borrow;
 
 fn process_operands(operands: Vec<i64>, index: usize, value: i64, result: i64, is_concatenation_allowed: bool) -> bool {
     if index == operands.len() {
@@ -29,9 +29,7 @@ fn process_operands(operands: Vec<i64>, index: usize, value: i64, result: i64, i
     false
 }
 
-fn main() {
-    let input_string = fs::read_to_string("./src/input.txt").unwrap();
-
+pub fn main(input_string: String) -> (String, String) {
     let mut sum = 0;
     let mut concat_sum = 0;
     for line in input_string.lines().into_iter() {
@@ -46,6 +44,6 @@ fn main() {
             concat_sum += result;
         }
     }
-    println!("Sum is: {}", sum);
-    println!("Concat sum is: {}", concat_sum);
+
+    (sum.to_string(), concat_sum.to_string())
 }

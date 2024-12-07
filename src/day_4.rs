@@ -1,5 +1,3 @@
-use std::fs;
-
 fn check_range_for_xmas(matrix: Vec<Vec<char>>, row_indexes: Vec<usize>, column_indexes: Vec<usize>) -> bool {
     let mut word = "".to_owned();
     for index in 0..4 {
@@ -16,8 +14,7 @@ fn check_range_for_mas(matrix: Vec<Vec<char>>, row_indexes: Vec<usize>, column_i
     return word.eq("MAS") || word.eq("SAM");
 }
 
-fn main() {
-    let input_string = fs::read_to_string("./src/input.txt").unwrap();
+pub fn main(input_string: String) -> (String, String) {
     let input_matrix = input_string.lines().map(|line| line.chars().collect()).collect::<Vec<Vec<char>>>();
 
     let mut xmas_count = 0;
@@ -48,7 +45,6 @@ fn main() {
             }
         }
     }
-    println!("XMAS Count is: {}", xmas_count);
 
     let mut cross_xmass_count = 0;
 
@@ -64,5 +60,6 @@ fn main() {
             }
         }
     }
-    println!("X-MAS Count is: {}", cross_xmass_count);
+
+    (xmas_count.to_string(), cross_xmass_count.to_string())
 }

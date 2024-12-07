@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, collections::HashSet, fs};
+use std::{cmp::Ordering, collections::HashSet};
 
 fn check_order(orders: HashSet<(i32,i32)>, a:i32, b:i32) -> Ordering {
     if orders.contains(&(a,b)) {
@@ -10,8 +10,7 @@ fn check_order(orders: HashSet<(i32,i32)>, a:i32, b:i32) -> Ordering {
     }
 }
 
-fn main() {
-    let input_string = fs::read_to_string("./src/input.txt").unwrap();
+pub fn main(input_string: String) -> (String, String) {
     let mut orders: HashSet<(i32,i32)> = HashSet::new();
     let mut updates: Vec<Vec<i32>> = Vec::new();
 
@@ -47,12 +46,12 @@ fn main() {
             incorrect_updates.push(update.to_owned());
         }
     }
-    println!("Sum is: {}", sum);
 
     let mut corrected_sum = 0;
     for update in incorrect_updates.iter_mut() {
         update.sort_by(|a,b| check_order(orders.clone(), a.to_owned(), b.to_owned()));
         corrected_sum += update[(update.len()-1)/2];
     }
-    println!("Corrected sum is: {}", corrected_sum);
+
+    (sum.to_string(), corrected_sum.to_string())
 }

@@ -1,5 +1,3 @@
-use std::fs;
-
 fn get_diff_vec(line_vec: Vec<i32>) -> Vec<i32> {
     let mut line_diff_vec = Vec::<i32>::new();
 
@@ -38,12 +36,11 @@ fn is_safe(line_diff_vec: Vec<i32>) -> bool {
     return is_safe;
 }
 
-fn main() {
-    let input_file_contents = fs::read_to_string("src/input.txt").unwrap();
+pub fn main(input_string: String) -> (String, String) {
 
     let mut safe_reports_count = 0;
     let mut safe_reports_count_adj = 0;
-    for line in input_file_contents.lines() {
+    for line in input_string.lines() {
         let line_vec: Vec<i32> = line.split_whitespace().map(|x| x.parse::<i32>().unwrap()).collect::<Vec<i32>>();
         let line_diff_vec = get_diff_vec(line_vec.to_vec());
 
@@ -62,6 +59,5 @@ fn main() {
         }
     }
 
-    println!("Safe reports count: {}", safe_reports_count);
-    println!("Safe reports count (adjusted): {}", safe_reports_count_adj);
+    (safe_reports_count.to_string(), safe_reports_count_adj.to_string())
 }
