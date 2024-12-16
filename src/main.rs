@@ -11,6 +11,7 @@ mod day_10;
 mod day_11;
 mod day_12;
 mod day_13;
+mod day_14;
 
 use std::{env, fs};
 
@@ -46,6 +47,7 @@ fn main() {
         11 => day_11::main(input_string),
         12 => day_12::main(input_string),
         13 => day_13::main(input_string),
+        14 => day_14::main(input_string),
         _ => {
             println!("Invalid day");
             ("".to_owned(), "".to_owned())
